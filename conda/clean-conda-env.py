@@ -22,7 +22,7 @@ def remove_conda_envs(envs: List[str]):
     for env in envs:
         local_command = command.copy()
         local_command.append(env)
-        print(f"Removing conda environment: {env} ...", end="")
+        print(f"Removing conda environment: {env} ...", end="", flush=True)
         subprocess.check_call(local_command,
                               stdout=subprocess.DEVNULL,
                               stderr=subprocess.DEVNULL)
