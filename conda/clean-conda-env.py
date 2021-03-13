@@ -23,9 +23,9 @@ def remove_conda_envs(envs: List[str]):
         local_command = command.copy()
         local_command.append(env)
         print(f"Removing conda environment: {env} ...", end="")
-        subprocess.check_output(local_command,
-                                stdout=subprocess.DEVNULL,
-                                stderr=subprocess.DEVNULL)
+        subprocess.check_call(local_command,
+                              stdout=subprocess.DEVNULL,
+                              stderr=subprocess.DEVNULL)
         print("Done")
 
 # Remove conda environments matching the given regex
