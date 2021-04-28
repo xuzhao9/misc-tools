@@ -22,7 +22,7 @@ def run_script(script_file: str):
                "bash", script_file]
     subprocess.check_call(command)
 
-def run_group(repo: git.Repo, commit: str. script: str):
+def run_group(repo: git.Repo, commit: str, script: str):
     # Checkout the commit
     checkout_commit(repo, commit)
     # Build the repo
