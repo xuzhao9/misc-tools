@@ -17,7 +17,9 @@ def build_repo(repo: git.Repo):
     subprocess.check_call(command, cwd=repo.working_tree_dir)
 
 def run_script(script_file: str):
-    command = ["bash", script_file]
+    command = ["sudo", "-E", "systemd-run", "--slice=workload.slice", "--same-dir",
+               "--wait", "--collect", "--service-type=exec", "--pty", f'--uid={os.environ["USER"]}',
+               "bash", script_file]
     subprocess.check_call(command)
 
 def run_group(repo: git.Repo, commit: str. script: str):
