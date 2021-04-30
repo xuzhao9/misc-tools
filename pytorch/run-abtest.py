@@ -20,7 +20,7 @@ def run_script(script_file: str) -> str:
     command = ["sudo", "-E", "systemd-run", "--slice=workload.slice", "--same-dir",
                "--wait", "--collect", "--service-type=exec", "--pty", f'--uid={os.environ["USER"]}',
                "bash", script_file]
-    output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+    output = subprocess.check_output(command, stderr=subprocess.STDOUT).decode().strip()
     return output
 
 def run_group(repo: git.Repo, commit: str, script: str):
