@@ -16,11 +16,12 @@ def build_repo(repo: git.Repo):
     command = ["python", "setup.py", "install"]
     subprocess.check_call(command, cwd=repo.working_tree_dir)
 
-def run_script(script_file: str):
+def run_script(script_file: str) -> str:
     command = ["sudo", "-E", "systemd-run", "--slice=workload.slice", "--same-dir",
                "--wait", "--collect", "--service-type=exec", "--pty", f'--uid={os.environ["USER"]}',
                "bash", script_file]
-    subprocess.check_call(command)
+    output = subprocess.check_output(command, stderr=subprocess.STDOUT)
+    return output
 
 def run_group(repo: git.Repo, commit: str, script: str):
     # Checkout the commit
@@ -28,7 +29,9 @@ def run_group(repo: git.Repo, commit: str, script: str):
     # Build the repo
     build_repo(repo)
     # Run the script
-    run_script(script_file)
+    output = run_script(script)
+    # Save output to the directory
+    return output
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run abtest on a devbig machine")
@@ -36,7 +39,12 @@ if __name__ == "__main__":
     parser.add_argument("--control", required=True, type=str)
     parser.add_argument("--treatment", required=True, type=str)
     parser.add_argument("--script", required=True, type=str)
+    parser.add_argument("--output", required=True, type=str)
     args = parser.parse_args()
     pytorch_repo = git.Repo(args.pytorch)
-    run_group(pytorch_repo, args.control, args.script)
-    run_group(pytorch_repo, args.treatment, args.script)
+    o1 = run_group(pytorch_repo, args.control, args.script)
+    o2 = run_group(pytorch_repo, args.treatment, args.script)
+    o = f"===================== CONTROL GROUP OUTPUT ================\n{o1}\n"
+    o += f"===================== TREATMENT GROUP OUTPUT ===================\n{o2}\n"
+    with open(args.output, "w") as fo:
+        fo.write(o)
